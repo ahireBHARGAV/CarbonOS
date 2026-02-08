@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-display font-bold text-white">Command Center</h1>
+            <p class="text-slate-400">Real-time Carbon Intelligence & Allocation Engine</p>
+        </div>
+        <div class="flex items-center space-x-2 bg-white/5 rounded-lg p-1.5 border border-white/10">
+            <span class="px-3 py-1 text-xs font-bold text-emerald-400 bg-emerald-400/10 rounded">LIVE</span>
+            <span class="text-xs text-slate-400 px-2">{{ total_hours }} Productive Hours Logged</span>
+        </div>
+    </div>
+
+    <!-- KPI Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Total Emissions -->
+        <div class="glass-panel rounded-xl p-6 relative overflow-hidden group">
+            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <svg class="w-16 h-16 text-rose-500" fill="currentColor" viewBox="0 0 20 20"><path d="M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V9.236a1 1 0 00-1.447-.894l-4 2a1 1 0 00-.553.894V17zM15.211 6.276a1 1 0 000-1.788l-4.764-2.382a1 1 0 00-.894 0L4.789 4.488a1 1 0 000 1.788l4.764 2.382a1 1 0 00.894 0l4.764-2.382zM4.447 8.342A1 1 0 003 9.236V15a1 1 0 00.553.894l4 2A1 1 0 009 17v-5.764a1 1 0 00-.553-.894l-4-2z"/></svg>
+            </div>
+            <h3 class="text-sm font-medium text-slate-400 uppercase tracking-wider">Total Carbon Load</h3>
+            <p class="text-3xl font-display font-bold text-white mt-1">{{ total_emissions }} <span class="text-base font-normal text-slate-500">kg CO2</span></p>
+            <div class="mt-4 h-1 w-full bg-slate-800 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-rose-500 to-orange-500 w-[70%]"></div>
+            </div>
+        </div>
+
+        <!-- Carbon Cost Per Hour -->
+        <div class="glass-panel rounded-xl p-6 relative overflow-hidden group">
+             <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <svg class="w-16 h-16 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+            </div>
+            <h3 class="text-sm font-medium text-slate-400 uppercase tracking-wider">Carbon Cost / Hour</h3>
+            <p class="text-3xl font-display font-bold text-white mt-1">{{ carbon_cost_per_hour }} <span class="text-base font-normal text-slate-500">kg/hr</span></p>
+            <p class="text-xs text-slate-500 mt-2">Allocated per productive hour</p>
+        </div>
+
+        <!-- Office Intensity -->
+         <div class="glass-panel rounded-xl p-6 relative overflow-hidden group">
+            <h3 class="text-sm font-medium text-slate-400 uppercase tracking-wider">Office Intensity</h3>
+            <p class="text-3xl font-display font-bold text-white mt-1">{{ config.grid_intensity }} <span class="text-base font-normal text-slate-500">kg/kWh</span></p>
+            <p class="text-xs text-slate-500 mt-2">Grid Factor</p>
+        </div>
+        
+         <!-- Active Employees -->
+         <div class="glass-panel rounded-xl p-6 relative overflow-hidden group">
+            <h3 class="text-sm font-medium text-slate-400 uppercase tracking-wider">Digital Footprint</h3>
+            <p class="text-3xl font-display font-bold text-white mt-1">{{ digital_emissions }} <span class="text-base font-normal text-slate-500">kg CO2</span></p>
+            <p class="text-xs text-slate-500 mt-2">Cloud + Hardware</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Main: Global Settings (The "Brain") -->
+        <div class="lg:col-span-1 glass-panel rounded-xl p-6">
+            <h3 class="text-lg font-display font-bold text-white mb-4 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                Global Configuration
+            </h3>
+            <form method="POST" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Total Monthly Bill (kWh)</label>
+                    <input type="number" step="0.1" name="total_monthly_electricity_bill_kwh" value="{{ config.total_monthly_electricity_bill_kwh }}" class="w-full glass-input rounded-lg p-2 text-sm">
+                </div>
+                <div>
+                     <label class="block text-xs font-medium text-slate-400 mb-1">Grid Intensity (kg/kWh)</label>
+                    <input type="number" step="0.01" name="grid_intensity" value="{{ config.grid_intensity }}" class="w-full glass-input rounded-lg p-2 text-sm">
+                </div>
+                <div>
+                     <label class="block text-xs font-medium text-slate-400 mb-1">Unmanaged Cloud (kWh)</label>
+                    <input type="number" step="0.1" name="total_cloud_usage_kwh" value="{{ config.total_cloud_usage_kwh }}" class="w-full glass-input rounded-lg p-2 text-sm">
+                </div>
+                 <div>
+                     <label class="block text-xs font-medium text-slate-400 mb-1">Physical Servers</label>
+                    <input type="number" step="1" name="server_count" value="{{ config.server_count }}" class="w-full glass-input rounded-lg p-2 text-sm">
+                </div>
+                <button type="submit" class="w-full bg-white/10 hover:bg-white/20 text-white font-medium py-2 rounded-lg transition-colors text-sm border border-white/10">
+                    Update Dynamics
+                </button>
+            </form>
+        </div>
+
+        <!-- Live Ledger -->
+        <div class="lg:col-span-2 glass-panel rounded-xl p-6 overflow-hidden">
+            <h3 class="text-lg font-display font-bold text-white mb-4">Live Activity Ledger</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-400">
+                    <thead class="bg-white/5 text-slate-200 uppercase text-xs">
+                        <tr>
+                            <th class="px-4 py-3 rounded-l-lg">Employee</th>
+                            <th class="px-4 py-3">Mode</th>
+                            <th class="px-4 py-3">Distance</th>
+                            <th class="px-4 py-3 text-right rounded-r-lg">Est. Carbon</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        {% for log in logs %}
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="px-4 py-3 font-medium text-white">{{ log.employee.name }}</td>
+                            <td class="px-4 py-3">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700">
+                                    {{ log.get_commute_mode_display }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3">
+                                {% if log.is_home_commute %}
+                                    <span class="text-emerald-400">Home</span> ({{ log.commute_distance_km }}km)
+                                {% else %}
+                                    <span class="text-amber-400" title="{{ log.start_location }}">Custom</span> ({{ log.commute_distance_km }}km)
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3 text-right font-mono text-white">
+                                {{ log.commute_emissions|floatformat:2 }} kg
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="px-4 py-8 text-center text-slate-500">No activity logged yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

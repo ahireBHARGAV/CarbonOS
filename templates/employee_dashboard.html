@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    <!-- Header -->
+    <div class="glass-panel rounded-xl p-6 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-display font-bold text-white">My Impact Dashboard</h1>
+            <p class="text-slate-400">Personal Usage & Contribution</p>
+        </div>
+        <div class="flex items-center space-x-3">
+            <div class="text-right">
+                <p class="text-sm font-medium text-white">{{ employee.name }}</p>
+                <p class="text-xs text-slate-500">{{ employee.home_address }}</p>
+            </div>
+            <div class="h-10 w-10 rounded-full bg-gradient-to-tr from-sky-400 to-indigo-500 flex items-center justify-center text-white font-bold text-sm">
+                {{ employee.name|slice:":2"|upper }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Total -->
+        <div class="glass-panel rounded-xl p-6 text-center">
+            <p class="text-xs text-slate-400 uppercase tracking-wider mb-2">Total Monthly Footprint</p>
+            <p class="text-4xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-orange-400">
+                {{ total_emissions }} <span class="text-sm text-slate-500 font-normal">kg CO2</span>
+            </p>
+        </div>
+        
+        <!-- Commute Share -->
+        <div class="glass-panel rounded-xl p-6 text-center">
+            <p class="text-xs text-slate-400 uppercase tracking-wider mb-2">Commute Impact</p>
+            <p class="text-2xl font-bold text-white">{{ commute_emissions }} <span class="text-sm text-slate-500 font-normal">kg</span></p>
+            <div class="w-full bg-white/5 h-1.5 rounded-full mt-3 overflow-hidden">
+                <div class="bg-teal-500 h-full" style="width: 70%"></div> <!-- Dynamic width in real app -->
+            </div>
+        </div>
+
+        <!-- Digital Share -->
+        <div class="glass-panel rounded-xl p-6 text-center">
+            <p class="text-xs text-slate-400 uppercase tracking-wider mb-2">Digital Factory</p>
+            <p class="text-2xl font-bold text-white">{{ digital_emissions }} <span class="text-sm text-slate-500 font-normal">kg</span></p>
+             <div class="w-full bg-white/5 h-1.5 rounded-full mt-3 overflow-hidden">
+                <div class="bg-indigo-500 h-full" style="width: 30%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="glass-panel rounded-xl p-6">
+        <h3 class="text-lg font-medium text-white mb-4">Emission Trend (Last 5 Logs)</h3>
+        <div class="h-64 relative w-full">
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Recent Logs -->
+    <div class="glass-panel rounded-xl p-6">
+        <h3 class="text-lg font-medium text-white mb-4">Recent Activity</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-400">
+                <thead class="bg-white/5 text-slate-200 uppercase text-xs">
+                    <tr>
+                        <th class="px-4 py-2 rounded-l">Date</th>
+                        <th class="px-4 py-2">Mode</th>
+                        <th class="px-4 py-2 text-right rounded-r">Impact</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    {% for log in logs %}
+                    <tr>
+                        <td class="px-4 py-3">{{ log.date }}</td>
+                        <td class="px-4 py-3">
+                             <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700">
+                                {{ log.get_commute_mode_display }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 text-right text-white font-mono">{{ log.commute_emissions|floatformat:2 }} kg</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="3" class="text-center py-4">No logs found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const labels = {{ usage_chart_labels|safe }};
+        const data = {{ usage_chart_values|safe }};
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Daily Emissions (kg)',
+                    data: data,
+                    borderColor: '#f43f5e', // Rose-500
+                    backgroundColor: 'rgba(244, 63, 94, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    pointBackgroundColor: '#fff',
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        ticks: { color: '#94a3b8' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#94a3b8' }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

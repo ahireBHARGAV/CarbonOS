@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-md mx-auto mt-20">
+    <div class="glass-panel rounded-xl p-8 ring-1 ring-gray-900/5">
+        <h2 class="text-2xl font-display font-bold text-white mb-2 text-center">My Dashboard</h2>
+        <p class="text-slate-400 text-center mb-6 text-sm">Select your profile to view your stats</p>
+
+        <ul class="space-y-2">
+            {% for emp in employees %}
+            <li>
+                <a href="{% url 'employee_dashboard' emp.id %}" class="block p-4 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 hover:borderColor-white/20 transition-all group flex items-center justify-between">
+                    <span class="font-medium text-slate-200 group-hover:text-white">{{ emp.name }}</span>
+                    <svg class="w-5 h-5 text-slate-500 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+        
+        <div class="mt-8 text-center">
+             <a href="{% url 'wizard' %}" class="text-sm text-teal-400 hover:text-teal-300">← Back to Log Wizard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

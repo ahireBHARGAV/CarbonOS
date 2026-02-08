@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-md mx-auto relative group">
+    <div class="absolute -inset-1 bg-gradient-to-r from-teal-500 to-emerald-600 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
+    <div class="relative glass-panel rounded-xl p-8 ring-1 ring-gray-900/5">
+        <h2 class="text-3xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-200 to-emerald-400 mb-6 text-center">
+            Daily Impact Log
+        </h2>
+
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Employee Select (Simulation) -->
+            <div>
+                <label class="block text-sm font-medium text-slate-400 mb-1">Employee Profile</label>
+                <select name="employee" class="w-full glass-input rounded-lg p-3 text-sm focus:ring-2 focus:ring-teal-500 transition-all">
+                    {% for emp in employees %}
+                        <option value="{{ emp.id }}">{{ emp.name }}</option>
+                    {% empty %}
+                        <option>No employees found - Run seeder</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Smart Commute Telemetry -->
+            <div class="pt-4 border-t border-white/10">
+                <h3 class="text-lg font-medium text-teal-300 mb-4">Commute Telemetry</h3>
+                
+                <div class="flex items-center justify-between mb-4 bg-white/5 p-3 rounded-lg">
+                    <span class="text-sm text-slate-300">Commuting from Home?</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="is_home_commute" id="is_home_commute" class="sr-only peer" checked onchange="toggleLocationInput()">
+                        <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
+                    </label>
+                </div>
+
+                <div id="start_location_container" class="hidden transition-all duration-300 ease-in-out opacity-0 translate-y-2">
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Starting Location</label>
+                    <input type="text" name="start_location" placeholder="e.g. Koramangala, Bengaluru" 
+                           class="w-full glass-input rounded-lg p-3 text-sm focus:ring-2 focus:ring-teal-500 transition-all placeholder-slate-600">
+                    <p class="text-xs text-slate-500 mt-1">Distance will be auto-calculated via GPS simulation.</p>
+                </div>
+
+                <div class="grid grid-cols-4 gap-2 mt-4">
+                    {% for code, label in request.resolver_match.func.view_class.COMMUTE_MODES %} 
+                        <!-- Hack to access choices if class based, but since function based, hardcoding or passing context is better. 
+                             Or just hardcode for prototype speed & design control -->
+                    {% endfor %}
+                    <label class="cursor-pointer">
+                        <input type="radio" name="commute_mode" value="METRO" class="peer sr-only" checked>
+                        <div class="peer-checked:bg-teal-500/20 peer-checked:border-teal-500 peer-checked:text-teal-300 border border-transparent rounded-lg p-2 text-center transition-all hover:bg-white/5 flex flex-col items-center justify-center h-20">
+                            <!-- Metro Icon -->
+                            <svg class="w-6 h-6 mb-1 opacity-70 peer-checked:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            <span class="text-[10px] uppercase font-bold tracking-wider">Metro</span>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="commute_mode" value="EV" class="peer sr-only">
+                        <div class="peer-checked:bg-teal-500/20 peer-checked:border-teal-500 peer-checked:text-teal-300 border border-transparent rounded-lg p-2 text-center transition-all hover:bg-white/5 flex flex-col items-center justify-center h-20">
+                            <!-- EV Icon -->
+                            <svg class="w-6 h-6 mb-1 opacity-70 peer-checked:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            <span class="text-[10px] uppercase font-bold tracking-wider">EV</span>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="commute_mode" value="AUTO" class="peer sr-only">
+                        <div class="peer-checked:bg-teal-500/20 peer-checked:border-teal-500 peer-checked:text-teal-300 border border-transparent rounded-lg p-2 text-center transition-all hover:bg-white/5 flex flex-col items-center justify-center h-20">
+                            <!-- Auto/Rickshaw Generic Icon -->
+                            <svg class="w-6 h-6 mb-1 opacity-70 peer-checked:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path></svg>
+                            <span class="text-[10px] uppercase font-bold tracking-wider">Auto</span>
+                        </div>
+                    </label>
+                     <label class="cursor-pointer">
+                        <input type="radio" name="commute_mode" value="CAR" class="peer sr-only">
+                        <div class="peer-checked:bg-teal-500/20 peer-checked:border-teal-500 peer-checked:text-teal-300 border border-transparent rounded-lg p-2 text-center transition-all hover:bg-white/5 flex flex-col items-center justify-center h-20">
+                            <!-- Car Icon -->
+                            <svg class="w-6 h-6 mb-1 opacity-70 peer-checked:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                             <span class="text-[10px] uppercase font-bold tracking-wider">Car</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Productivity & Digital -->
+            <div class="pt-4 border-t border-white/10 grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Hours Worked</label>
+                    <input type="number" name="hours_worked" value="8" step="0.5" 
+                           class="w-full glass-input rounded-lg p-3 text-sm focus:ring-2 focus:ring-teal-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">vCPU Hours</label>
+                    <input type="number" name="vcpu_hours" value="0" step="1" 
+                           class="w-full glass-input rounded-lg p-3 text-sm focus:ring-2 focus:ring-teal-500">
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-400 hover:to-emerald-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:shadow-teal-500/30 transition-all transform hover:-translate-y-0.5">
+                Log Activity
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleLocationInput() {
+        const checkbox = document.getElementById('is_home_commute');
+        const container = document.getElementById('start_location_container');
+        
+        if (checkbox.checked) {
+            container.classList.add('hidden', 'opacity-0', 'translate-y-2');
+        } else {
+            container.classList.remove('hidden');
+            // Small delay to allow display:block to apply before transition
+            setTimeout(() => {
+                container.classList.remove('opacity-0', 'translate-y-2');
+            }, 10);
+        }
+    }
+</script>
+{% endblock %}
